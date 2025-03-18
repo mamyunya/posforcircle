@@ -85,6 +85,21 @@ function ShowRegisteredProducts() {
 }
 
 
+function deleteProduct(index) {
+    let productList = JSON.parse(localStorage.getItem('productList')) || [];
+    //削除再確認
+    const confirmDelete = confirm(`「${productList[index].name} (¥${productList[index].price})」を削除しますか？\n現在保存されているデータが破損する恐れがあります。`);
+    if (!confirmDelete) {
+        return; // キャンセルされた場合は削除しない
+    }
+    productList.splice(index, 1);  // 指定したインデックスの商品を削除
+    console.log(productList);
+    localStorage.setItem('productList', JSON.stringify(productList));
+    remakedata();
+
+    ShowRegisteredProducts();  // 削除後にリストを再描画
+}
+
 
 //トグルの設定
 function createQuantitySelect() {
