@@ -21,27 +21,19 @@
             <div class="product" id="productList">
                 <!-- 商品リストがここに表示されます -->
             </div>
-            <button onclick="addSelectedItems()">購入</button>
+            <button onclick="processPurchase()">購入</button>
         </div>
     </div>
 
     <div id="salesPage" class="page">
         <h2>売上履歴</h2>
         <table>
-            <thead>
-                <tr>
-                    <th>日付</th>
-                    <th>商品名</th>
-                    <th>価格</th>
-                    <th>数量</th>
-                    <th>合計金額</th>
-                </tr>
-            </thead>
-            <tbody id="salesTable">
+            <tbody id="salesList">
                 <!-- 売上データがここに表示されます -->
             </tbody>
         </table>
         <button onclick="downloadCSV()">CSV出力</button>
+        <button onclick="deleteSalesList()">データ削除</button>
     </div>
 
     <div id="registerPage" class="page">
