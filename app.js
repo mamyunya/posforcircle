@@ -1,3 +1,7 @@
+let totalAmount = 0; // 小計金額を保存
+let selectedProducts = [];//購入商品リスト
+
+
 // ページ遷移を管理
 function navigate(pageId) {
     const pages = document.querySelectorAll('.page');
@@ -5,8 +9,10 @@ function navigate(pageId) {
 
     const targetPage = document.getElementById(pageId + 'Page');
     targetPage.classList.add('active');
+    daletePaymentValue();
 
     if(targetPage==homePage){
+        selectedProducts = [];
         showProduct();
     }
     if(targetPage==salesPage){
@@ -20,8 +26,7 @@ function navigate(pageId) {
 
 //購入処理
 function processPurchase() {
-    const selectedProducts = [];
-
+    
     // 商品リストを取得
     document.querySelectorAll('.product-item').forEach(productDiv => {
         const name = productDiv.getAttribute('data-name');
@@ -38,11 +43,26 @@ function processPurchase() {
         return;
     }
 
-    // 購入処理を実行（売上データを保存）
-    saveSale(selectedProducts);
+    // 合計金額を計算
+    totalAmount = selectedProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0);
 
-    // 成功メッセージ
-    alert("購入が完了しました！");
+    // 画面遷移 & 合計金額を表示
+    navigate('payment');
+    document.getElementById('totalAmountText').textContent = `合計金額: ¥${totalAmount}`;
+}
+
+
+function calculateChange() {
+    let payment = parseInt(document.getElementById('paymentInput').value, 10);
+
+    if (isNaN(payment) || payment < totalAmount) {
+        document.getElementById('changeText').textContent = "支払金額が不足しています。";
+        return;
+    }
+
+    let change = payment - totalAmount;
+    document.getElementById('changeText').textContent = `おつり: ¥${change}`;
+
 
     // 購入後、選択状態をリセット
     document.querySelectorAll('.product-item select').forEach(select => {
@@ -51,9 +71,36 @@ function processPurchase() {
 }
 
 
+function addInformation(){
+    const selectedGender = document.querySelector('input[name="gender"]:checked').value;//性別取得
+    const selectedClassfy = document.querySelector('input[name="classification"]:checked').value;//区分取得
+    const information = parseInt(document.getElementById('Information').value, 10);//番号等取得
+    // 購入処理を実行（売上データを保存）
+
+    const selectedInformation = ({ gender:selectedGender, classfy:selectedClassfy, Information:information });
+    console.log(selectedProducts);
+    console.log(selectedInformation);
+    saveSale(selectedInformation);
+    daletePaymentValue();
+    // ホーム画面に戻る
+    navigate('home');
+}
+
+
+// 支払い画面の入力をリセット
+function daletePaymentValue(){
+    document.getElementById('paymentInput').value = '';
+    document.getElementById('totalAmountText').textContent = '合計金額: ¥0';
+    document.getElementById('changeText').textContent = '';
+    document.getElementById('Information').value = '';
+    document.getElementById('GetInformation').reset();
+    //document.querySelector('input[name="gender"]:checked').value = '';
+    //document.querySelector('input[name="classification"]:checked').value = '';
+}
+
 
 //売上データの保存
-function saveSale(selectedProducts) {
+function saveSale(selectedInformation) {
     const sales = JSON.parse(localStorage.getItem('sales')) || [];
 
     // 日付を取得（YYYY-MM-DD 形式）
@@ -70,6 +117,9 @@ function saveSale(selectedProducts) {
     const newSale = {
         date: today,
         items: items,
+        gender: selectedInformation.gender,
+        classfy: selectedInformation.classfy,
+        Information: selectedInformation.Information,
         total: totalAmount
     };
 
@@ -98,6 +148,9 @@ function showSales() {
     // テーブルのヘッダーを作成
     let headerRow = `<tr><th>NO.</th><th>日時</th>`;
     allProductNames.forEach(name => headerRow += `<th>${name}</th>`);
+    headerRow += `<th>性別</th>`;
+    headerRow += `<th>区分</th>`;
+    headerRow += `<th>その他</th>`;
     headerRow += `<th>小計</th></tr>`;
 
     salesContainer.innerHTML = headerRow; // ヘッダー追加
@@ -116,6 +169,10 @@ function showSales() {
         allProductNames.forEach(name => {
             row += `<td>${itemMap[name] || ''}</td>`;
         });
+
+        row += `<td>${sale.gender}</td>`;
+        row += `<td>${sale.classfy}</td>`;
+        row += `<td>${sale.Information}</td>`;
 
         row += `<td>¥${sale.total}</td></tr>`;
         salesContainer.innerHTML += row;
@@ -152,7 +209,7 @@ function downloadCSV() {
     allProductNames = Array.from(allProductNames); // Set → Array に変換
 
     // CSVのヘッダーを作成
-    let csvContent = `NO.,日時,${allProductNames.join(',')},小計\n`;
+    let csvContent = `NO.,日時,${allProductNames.join(',')},性別,区分,付属情報,小計\n`;
 
     // 売上データをCSVに変換
     salesList.forEach((sale, index) => {
@@ -168,6 +225,10 @@ function downloadCSV() {
         allProductNames.forEach(name => {
             row.push(itemMap[name] || '');
         });
+
+        row.push(sale.gender || '');// 性別
+        row.push(sale.classfy || '');// 区分
+        row.push(sale.Information || '');//追加情報
 
         row.push(sale.total); // 小計を追加
         csvContent += row.join(',') + '\n';
