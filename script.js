@@ -3,7 +3,8 @@ let selectedProducts = [];//購入商品リスト
 
 
 // ページ遷移を管理
-function navigate(pageId) {
+function navigate(pageId, element) {
+    console.log(element);
     const pages = document.querySelectorAll('.page');
     pages.forEach(page => page.classList.remove('active'));
 
@@ -11,15 +12,23 @@ function navigate(pageId) {
     targetPage.classList.add('active');
     daletePaymentValue();
 
+
+    // すべてのタブのアクティブクラスを削除
+
+    document.querySelectorAll('.navbar a').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
     if(targetPage==homePage){
         selectedProducts = [];
         showProduct();
-    }
-    if(targetPage==salesPage){
+        element.classList.add('active');
+    }else if(targetPage==salesPage){
         showSales();
-    }
-    if(targetPage==registerPage){
+        element.classList.add('active');
+    }else if(targetPage==registerPage){
        ShowRegisteredProducts();
+       element.classList.add('active');
     }
 }
 
@@ -47,12 +56,26 @@ function processPurchase() {
     totalAmount = selectedProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0);
 
     // 画面遷移 & 合計金額を表示
-    navigate('payment');
+    navigate('payment', document.getElementById('paymentPage'));
     document.getElementById('totalAmountText').textContent = `合計金額: ¥${totalAmount}`;
 }
 
 
+document.addEventListener('keydown', (event) => {
+    var keyName = event.key;
+    console.log(keyName);
+    if(keyName == 'Enter'){
+        if(document.activeElement.id == 'paymentInput'){
+            calculateChange();
+            document.activeElement.blur()
+        }else if(document.activeElement.id == 'Information'){
+            addInformation();
+        }
+    }
+});
+
 function calculateChange() {
+    
     let payment = parseInt(document.getElementById('paymentInput').value, 10);
 
     if (isNaN(payment) || payment < totalAmount) {
@@ -63,6 +86,8 @@ function calculateChange() {
     let change = payment - totalAmount;
     document.getElementById('changeText').textContent = `おつり: ¥${change}`;
 
+    document.getElementById('payment_window1').style.display = 'none';
+    document.getElementById('payment_window2').style.display = 'inline';
 
     // 購入後、選択状態をリセット
     document.querySelectorAll('.product-item select').forEach(select => {
@@ -72,9 +97,20 @@ function calculateChange() {
 
 
 function addInformation(){
-    const selectedGender = document.querySelector('input[name="gender"]:checked').value;//性別取得
-    const selectedClassfy = document.querySelector('input[name="classification"]:checked').value;//区分取得
-    const information = parseInt(document.getElementById('Information').value, 10);//番号等取得
+    let selectedGender,selectedClassfy;
+    if(document.querySelector('input[name="gender"]:checked')){
+        selectedGender = document.querySelector('input[name="gender"]:checked').value;//性別取得
+    }else{
+        selectedGender = null;
+    }
+
+    if(document.querySelector('input[name="gender"]:checked')){
+        selectedClassfy = document.querySelector('input[name="classification"]:checked').value;//区分取得
+    }else{
+        selectedClassfy = null;
+    }
+
+    const information = document.getElementById('Information').value;//番号等取得
     // 購入処理を実行（売上データを保存）
 
     const selectedInformation = ({ gender:selectedGender, classfy:selectedClassfy, Information:information });
@@ -83,7 +119,7 @@ function addInformation(){
     saveSale(selectedInformation);
     daletePaymentValue();
     // ホーム画面に戻る
-    navigate('home');
+    navigate('home',document.getElementById('nav_home'));
 }
 
 
@@ -94,6 +130,8 @@ function daletePaymentValue(){
     document.getElementById('changeText').textContent = '';
     document.getElementById('Information').value = '';
     document.getElementById('GetInformation').reset();
+    document.getElementById('payment_window1').style.display = 'inline';
+    document.getElementById('payment_window2').style.display = 'none';
     //document.querySelector('input[name="gender"]:checked').value = '';
     //document.querySelector('input[name="classification"]:checked').value = '';
 }
@@ -104,7 +142,7 @@ function saveSale(selectedInformation) {
     const sales = JSON.parse(localStorage.getItem('sales')) || [];
 
     // 日付を取得（YYYY-MM-DD 形式）
-    const today = new Date().toISOString().split('T')[0];
+    const today = dateTimeFormat.format(new Date());
 
     // 合計金額を計算
     let totalAmount = 0;
@@ -353,6 +391,19 @@ function createQuantitySelect() {
     }
     return select;
 }
+
+
+// 東京のタイムゾーンで日付と時間を取得（YYYY-MM-DDTHH:mm:ss形式）
+const dateTimeFormat = new Intl.DateTimeFormat('ja-JP', {
+    timeZone: 'Asia/Tokyo', 
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+
 
 showProduct();
 console.log("app start");
