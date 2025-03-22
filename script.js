@@ -374,7 +374,6 @@ function deleteProduct(index) {
     productList.splice(index, 1);  // 指定したインデックスの商品を削除
     console.log(productList);
     localStorage.setItem('productList', JSON.stringify(productList));
-    remakedata();
 
     ShowRegisteredProducts();  // 削除後にリストを再描画
 }
