@@ -61,6 +61,7 @@ function processPurchase() {
 }
 
 
+//キーボード確定ボタン押下時、次の画面に進む
 document.addEventListener('keydown', (event) => {
     var keyName = event.key;
     console.log(keyName);
@@ -273,13 +274,14 @@ function downloadCSV() {
     });
 
     // CSVデータをBlobに変換
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const bom = new Uint8Array([0xef, 0xbb, 0xbf]) //ここでUTF-8を指定
+    const blob = new Blob([bom, csvContent], { type: "text/csv" })
     const url = URL.createObjectURL(blob);
 
     // ダウンロード用のリンクを作成
     const a = document.createElement("a");
     a.href = url;
-    a.download = `sales_${new Date().toISOString().split('T')[0]}.csv`;
+    a.setAttribute("download", `sales_${new Date().toISOString().split('T')[0]}.csv`)
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
