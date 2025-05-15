@@ -1,13 +1,12 @@
-# posforcircle
+# React + Vite
 
-## 概要
-このアプリケーションは制作者がサークル活動時のレジシステム実装のために作成しました。
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 公表場所
-一時的に
-https://mamyunya.github.io/posforcircle/
-に公開しています。
+Currently, two official plugins are available:
 
-## アプリケーション作成の経緯
-現在、飲料の提供を行うサークルに所属しています。その中で、販売記録保存やお釣り記録のためにアプリケーションを探していました。
-しかし、ほとんどの無料アプリケーションは顧客の年齢層などの情報を入力することが出来なかったため、それが出来るアプリケーションを作成しました。
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
