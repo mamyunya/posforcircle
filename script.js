@@ -172,6 +172,7 @@ function showSales() {
     const salesList = JSON.parse(localStorage.getItem('sales')) || [];
     const salesContainer = document.getElementById('salesList');
     salesContainer.innerHTML = ''; // クリア
+    let totalPrise = 0;
     if (salesList.length === 0) {
         console.log("showing data was blocked");
         return;
@@ -215,7 +216,11 @@ function showSales() {
 
         row += `<td>¥${sale.total}</td></tr>`;
         salesContainer.innerHTML += row;
+        totalPrise += sale.total;
     });
+    //合計の表示
+    const footer_row = `<tr><td>合計</td><td></td><td></td><td></td><td></td><td></td><td>￥${totalPrise}</td></tr>`
+    salesContainer.innerHTML += footer_row;
 }
 
 
