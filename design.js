@@ -38,7 +38,7 @@ const dateTimeFormat = new Intl.DateTimeFormat('ja-JP', {
   });
 
 
-const LONG_PRESS_THRESHOLD = 300; // ミリ秒
+const LONG_PRESS_THRESHOLD = 100; // ミリ秒
 
 /**
  * 個々の商品のカウンターUI要素を作成し、返します。
@@ -60,13 +60,13 @@ function createCounterUI(initialCount, onIncrement, onReset) {
     incrementButton.classList.add('item-counter-button');
     incrementButton.textContent = '追加';
 
-    const resetButton = document.createElement('button');
-    resetButton.classList.add('item-counter-button', 'item-reset-button');
-    resetButton.textContent = 'リセット';
+    const decrementButton = document.createElement('button');
+    decrementButton.classList.add('item-counter-button', 'item-reset-button');
+    decrementButton.textContent = '戻す';
 
     itemCounterContainer.appendChild(counterDisplay);
     itemCounterContainer.appendChild(incrementButton);
-    itemCounterContainer.appendChild(resetButton);
+    itemCounterContainer.appendChild(decrementButton);
 
     // イベントリスナーの設定
     incrementButton.addEventListener('click', onIncrement);
@@ -89,19 +89,19 @@ function createCounterUI(initialCount, onIncrement, onReset) {
         clearTimeout(longPressTimer);
     };
 
-    resetButton.addEventListener('mousedown', startPress);
-    resetButton.addEventListener('mouseup', endPress);
-    resetButton.addEventListener('mouseleave', endPress);
+    decrementButton.addEventListener('mousedown', startPress);
+    decrementButton.addEventListener('mouseup', endPress);
+    decrementButton.addEventListener('mouseleave', endPress);
 
-    resetButton.addEventListener('touchstart', startPress, { passive: false });
-    resetButton.addEventListener('touchend', endPress);
-    resetButton.addEventListener('touchcancel', endPress);
+    decrementButton.addEventListener('touchstart', startPress, { passive: false });
+    decrementButton.addEventListener('touchend', endPress);
+    decrementButton.addEventListener('touchcancel', endPress);
 
     return {
         container: itemCounterContainer,
         display: counterDisplay,
         incrementBtn: incrementButton,
-        resetBtn: resetButton
+        resetBtn: decrementButton
     };
 }
 

@@ -72,7 +72,7 @@ select {
     height: 40px;
 }
 .product button {
-    margin-left: 100px;
+    margin-left: 10%;
 }
 .returnMoney{
     padding:10px;
@@ -105,7 +105,7 @@ th, td {
     padding: 8px;
     text-align: left;
 }
-/*IOS用input調整*/
+
 button {
     margin: 20px;
     background: linear-gradient(145deg, #4d4d80, #333366);
@@ -128,11 +128,6 @@ button:hover {
     transform: translateY(-1px);
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5),
                 -4px -4px 10px rgba(80, 80, 150, 0.3);
-}
-input {
-    padding: 15px 30px;
-    margin: 5px;
-    font-size:16px;
 }
 
 
@@ -212,22 +207,6 @@ input {
     background: linear-gradient(145deg, #e64d4d, #ff8585);
 }
 
-/* テストボタンのスタイル */
-#testAddProduct {
-    padding: 10px 20px;
-    font-size: 1.2em;
-    background-color: #555;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-#testAddProduct:hover {
-    background-color: #777;
-}
-
 input[type="text"],
 input[type="number"],
 textarea{
@@ -271,4 +250,54 @@ select:disabled {
     cursor: not-allowed;
     box-shadow: none;
     border-color: #3a3a73;
+}
+
+@media screen and (max-width:599px) { 
+
+/*IOS用input調整*/
+input {
+padding: 15px 30px;
+margin: 5px;
+font-size:16px;
+}
+
+.button{
+    margin:3%;
+}
+
+.product-item{
+    font-size:2%;
+}
+
+/* 個々のカウンターUIのスタイル */
+.item-counter-container {
+    display: flex;
+    align-items: center;
+    gap: 0px;
+    margin-left: 0px;
+}
+
+.item-counter-display {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8em;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 8px;
+    min-width: 20px;
+    text-align: center;
+    transition: all 0.2s ease-out;
+}
+
+.item-counter-button {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.9em;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    user-select: none;
+    white-space: nowrap;
+}
+
 }

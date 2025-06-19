@@ -208,7 +208,9 @@ function showSales() {
         totalPrise += sale.total;
     });
     //合計の表示
-    const footer_row = `<tr><td>合計</td><td></td><td></td><td></td><td></td><td></td><td></td><td>￥${totalPrise}</td></tr>`
+    const buf = `<td></td>`;
+    console.log(allProductNames.length);
+    const footer_row = `<tr><td>合計</td><td></td><td></td><td></td><td></td>${buf.repeat(allProductNames.length)}<td>￥${totalPrise}</td></tr>`;
     salesContainer.innerHTML += footer_row;
 }
 
@@ -335,14 +337,14 @@ function showProduct(){
                 // カウントを更新し、表示を更新
                 productCounts[product.name] = (productCounts[product.name] || 0) + 1;
                 updateCounterDisplay(counterDisplay, productCounts[product.name]);
-                //saveProductCounts(); // カウント変更時に保存
             },
-            // リセットボタン長押し時のコールバック
+            // デクリメントボタン長押し時のコールバック
             () => {
-                // カウントをリセットし、表示を更新
-                productCounts[product.name] = 0;
+                // カウントを更新し、表示を更新
+                if(productCounts[product.name] != 0 && productCounts[product.name] != null){
+                    productCounts[product.name] = (productCounts[product.name]) - 1;
+                }
                 updateCounterDisplay(counterDisplay, productCounts[product.name]);
-                //saveProductCounts(); // カウント変更時に保存
             }
         );
 
