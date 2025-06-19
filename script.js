@@ -2,6 +2,7 @@ let totalAmount = 0; // 小計金額を保存
 let selectedProducts = [];//購入商品リスト
 
 
+
 // ページ遷移を管理
 function navigate(pageId, element) {
     console.log(element);
@@ -40,7 +41,8 @@ function processPurchase() {
     document.querySelectorAll('.product-item').forEach(productDiv => {
         const name = productDiv.getAttribute('data-name');
         const price = parseInt(productDiv.getAttribute('data-price'));
-        const quantity = parseInt(productDiv.querySelector('select').value);
+        const quantityElement = productDiv.querySelector('.item-counter-display'); // design.jsで設定したクラス名
+        const quantity = parseInt(quantityElement.textContent); // 表示されているテキストを数値に変換
 
         if (quantity > 0) {
             selectedProducts.push({ name, price, quantity });
@@ -61,20 +63,7 @@ function processPurchase() {
 }
 
 
-//キーボード確定ボタン押下時、次の画面に進む
-document.addEventListener('keydown', (event) => {
-    var keyName = event.key;
-    console.log(keyName);
-    if(keyName == 'Enter'){
-        if(document.activeElement.id == 'paymentInput'){
-            calculateChange();
-            document.activeElement.blur()
-        }else if(document.activeElement.id == 'Information'){
-            addInformation();
-        }
-    }
-});
-
+//おつり計算
 function calculateChange() {
     
     let payment = parseInt(document.getElementById('paymentInput').value, 10);
@@ -219,7 +208,7 @@ function showSales() {
         totalPrise += sale.total;
     });
     //合計の表示
-    const footer_row = `<tr><td>合計</td><td></td><td></td><td></td><td></td><td></td><td>￥${totalPrise}</td></tr>`
+    const footer_row = `<tr><td>合計</td><td></td><td></td><td></td><td></td><td></td><td></td><td>￥${totalPrise}</td></tr>`
     salesContainer.innerHTML += footer_row;
 }
 
@@ -306,6 +295,7 @@ document.getElementById('productForm').addEventListener('submit', function(event
         document.getElementById('productName').value = '';
         document.getElementById('productPrice').value = '';
     }
+    ShowRegisteredProducts();
 });
 
 
@@ -322,6 +312,7 @@ function showProduct(){
     const productList = JSON.parse(localStorage.getItem('productList')) || [];
     const productListContainer = document.getElementById('productList');
     productListContainer.innerHTML = '';  // 表示をリセット
+    let productCounts = [];
 
     productList.forEach(product => {
         const productDiv = document.createElement('div');
@@ -329,17 +320,33 @@ function showProduct(){
         productDiv.setAttribute('data-name', product.name);
         productDiv.setAttribute('data-price', product.price);
 
-        // 数量選択ドロップダウンを作成
-        const quantitySelect = document.createElement('select');
-        for (let i = 0; i <= 10; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i;
-            quantitySelect.appendChild(option);
-        }
+        const productInfoSpan = document.createElement('span');
+        productInfoSpan.textContent = `${product.name} (¥${product.price})`;
+        productDiv.appendChild(productInfoSpan);
 
-        productDiv.innerHTML = `<span>${product.name} (¥${product.price})</span>`;
-        productDiv.appendChild(quantitySelect);
+        // productCountsから現在のカウントを取得、なければ0を初期値とする
+        const initialCount = 0;
+
+        // design.jsで定義されたcreateCounterUI関数を使用してUIを作成
+        const { container: counterUIContainer, display: counterDisplay } = createCounterUI(
+            initialCount,
+            // インクリメントボタンクリック時のコールバック
+            () => {
+                // カウントを更新し、表示を更新
+                productCounts[product.name] = (productCounts[product.name] || 0) + 1;
+                updateCounterDisplay(counterDisplay, productCounts[product.name]);
+                //saveProductCounts(); // カウント変更時に保存
+            },
+            // リセットボタン長押し時のコールバック
+            () => {
+                // カウントをリセットし、表示を更新
+                productCounts[product.name] = 0;
+                updateCounterDisplay(counterDisplay, productCounts[product.name]);
+                //saveProductCounts(); // カウント変更時に保存
+            }
+        );
+
+        productDiv.appendChild(counterUIContainer);
         productListContainer.appendChild(productDiv);
     });
 }
@@ -384,32 +391,6 @@ function deleteProduct(index) {
 
     ShowRegisteredProducts();  // 削除後にリストを再描画
 }
-
-
-//トグルの設定
-function createQuantitySelect() {
-    const select = document.createElement('select');
-    for (let i = 0; i <= 10; i++) {  // 数量1〜10を選択可能
-        const option = document.createElement('option');
-        option.value = i;
-        option.innerText = i;
-        select.appendChild(option);
-    }
-    return select;
-}
-
-
-// 東京のタイムゾーンで日付と時間を取得（YYYY-MM-DDTHH:mm:ss形式）
-const dateTimeFormat = new Intl.DateTimeFormat('ja-JP', {
-    timeZone: 'Asia/Tokyo', 
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-
 
 showProduct();
 console.log("app start");
